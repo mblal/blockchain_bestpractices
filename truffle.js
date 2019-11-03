@@ -5,12 +5,19 @@ var mnemonic = "candy maple cake sugar pudding cream honey rich smooth crumble s
 
 module.exports = {
   networks: {
-    development: {
+    /*development: {
       provider: function() {
-        return new HDWalletProvider(mnemonic, "http://127.0.0.1:8545/", 0, 10);
+        return new HDWalletProvider(mnemonic, "http://127.0.0.1:7545/", 0, 10);
       },
       network_id: '*',
       gas: 9999999
+    }*/
+
+    development: {
+      host: "127.0.0.1",
+      port: 7545,
+      network_id: "*" // Match any network id
     }
   }
+  
 };

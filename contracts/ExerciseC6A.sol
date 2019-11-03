@@ -1,12 +1,14 @@
-pragma solidity ^0.4.25;
+pragma solidity >=0.4.25;
 
 contract ExerciseC6A {
 
+
+    bool private operational = true;
     /********************************************************************************************/
     /*                                       DATA VARIABLES                                     */
     /********************************************************************************************/
-
-
+    uint constant M = 2;
+    uint counter = 0;
     struct UserProfile {
         bool isRegistered;
         bool isAdmin;
@@ -15,7 +17,7 @@ contract ExerciseC6A {
     address private contractOwner;                  // Account used to deploy contract
     mapping(address => UserProfile) userProfiles;   // Mapping for storing user profiles
 
-
+    address[] multiCallers = new address[](0);
 
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
@@ -51,6 +53,12 @@ contract ExerciseC6A {
         _;
     }
 
+    modifier requireIsOperational()
+    {
+        require(operational == true, "The contract is paused");
+        _;
+    }
+
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
@@ -83,6 +91,7 @@ contract ExerciseC6A {
                                 )
                                 external
                                 requireContractOwner
+                                requireIsOperational
     {
         require(!userProfiles[account].isRegistered, "User is already registered.");
 
@@ -90,6 +99,35 @@ contract ExerciseC6A {
                                                 isRegistered: true,
                                                 isAdmin: isAdmin
                                             });
+    }
+    function isOperational() public view returns(bool) {
+        return operational;
+    }
+    function setOperationgStatus(bool _operational) external
+    //requireContractOwner
+    {
+
+        require(operational != _operational, "The State is already in the same value");
+        require(userProfiles[msg.sender].isAdmin, "Caller is not an admin");
+
+
+        bool isIN = false;
+
+        for(uint c = 0; c < multiCallers.length; c++){
+            if (multiCallers[c] == msg.sender){
+                isIN = true;
+                break;
+            }
+        }
+        require(!isIN, "Caller has already called this function.");
+
+        multiCallers.push(msg.sender);
+        if (multiCallers.length >= M) {
+             operational = _operational;
+             multiCallers = new address[](0);
+        }
+
+
     }
 }
 
