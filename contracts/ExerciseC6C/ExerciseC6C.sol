@@ -1,4 +1,4 @@
-pragma solidity ^0.4.25;
+pragma solidity >=0.4.25;
 
 // It's important to avoid vulnerabilities due to numeric overflow bugs
 // OpenZeppelin's SafeMath library, when used correctly, protects agains such bugs
@@ -29,7 +29,7 @@ contract ExerciseC6C {
     /********************************************************************************************/
     /*                                       EVENT DEFINITIONS                                  */
     /********************************************************************************************/
-
+    mapping(address => uint256) private authorizedContracts;
     // No events
 
     /**
@@ -60,6 +60,10 @@ contract ExerciseC6C {
         _;
     }
 
+    modifier isCallerAuthorized() {
+        require(authorizedContracts[msg.sender] == 1, "Caller is not authorized");
+        _;
+    }
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
@@ -68,7 +72,7 @@ contract ExerciseC6C {
     * @dev Check if an employee is registered
     *
     * @return A bool that indicates if the employee is registered
-    */   
+    */
     function isEmployeeRegistered
                             (
                                 string id
@@ -124,8 +128,7 @@ contract ExerciseC6C {
                                     uint256 bonus
 
                                 )
-                                internal
-                                requireContractOwner
+                                external
     {
         require(employees[id].isRegistered, "Employee is not registered.");
 
@@ -134,39 +137,12 @@ contract ExerciseC6C {
 
     }
 
-    function calculateBonus
-                            (
-                                uint256 sales
-                            )
-                            internal
-                            view
-                            requireContractOwner
-                            returns(uint256)
-    {
-        if (sales < 100) {
-            return sales.mul(5).div(100);
-        }
-        else if (sales < 500) {
-            return sales.mul(7).div(100);
-        }
-        else {
-            return sales.mul(10).div(100);
-        }
+    function authorizeContracts(address _contract) public requireContractOwner{
+        authorizedContracts[_contract] = 1;
     }
 
-    function addSale
-                                (
-                                    string id,
-                                    uint256 amount
-                                )
-                                external
-                                requireContractOwner
-    {
-        updateEmployee(
-                        id,
-                        amount,
-                        calculateBonus(amount)
-        );
+    function deauthorizeContracts(address _contract) public {
+        delete authorizedContracts[_contract];
     }
 
 
