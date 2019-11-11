@@ -4,7 +4,7 @@ var Test = require('../config/testConfig.js');
 
 contract('ExerciseC6D', async (accounts) => {
 
-  const TEST_ORACLES_COUNT = 20;
+  const TEST_ORACLES_COUNT = 10;
   var config;
   before('setup contract', async () => {
     config = await Test.Config(accounts);
@@ -12,13 +12,14 @@ contract('ExerciseC6D', async (accounts) => {
     // Watch contract events
     const ON_TIME = 10;
     let events = config.exerciseC6D.allEvents();
+    /*
     events.watch((error, result) => {
       if (result.event === 'OracleRequest') {
         console.log(`\n\nOracle Requested: index: ${result.args.index.toNumber()}, flight:  ${result.args.flight}, timestamp: ${result.args.timestamp.toNumber()}`);
       } else {
         console.log(`\n\nFlight Status Available: flight: ${result.args.flight}, timestamp: ${result.args.timestamp.toNumber()}, status: ${result.args.status.toNumber() == ON_TIME ? 'ON TIME' : 'DELAYED'}, verified: ${result.args.verified ? 'VERIFIED' : 'UNVERIFIED'}`);
       }
-    });
+    });*/
 
     // Past events
     //events.get((error, logs) => {  });
